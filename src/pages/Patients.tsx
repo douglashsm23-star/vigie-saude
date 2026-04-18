@@ -10,7 +10,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { useAuth } from "@/contexts";
-import { getPatients } from "@/services/googleSheets";
+import { getPatients } from "@/services/firestoreService";
 import {
   getStoredPatients,
   clearAllPatientData,

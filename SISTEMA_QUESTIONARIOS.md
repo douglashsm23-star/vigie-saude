@@ -74,7 +74,7 @@ src/
 ├── utils/
 │   └── integrationUtils.ts               # Utilitários de integração
 └── services/
-    └── googleSheets.ts                   # (Existente, compatível)
+    └── firestoreService.ts                   # (Existente, compatível)
 ```
 
 ---
