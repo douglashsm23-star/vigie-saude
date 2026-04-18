@@ -1,4 +1,14 @@
-const API_URL = "https://sheetdb.io/api/v1/eh0ftrju3o4ve";
+import { db } from "./firebase";
+import { 
+  collection, 
+  addDoc, 
+  getDocs, 
+  query, 
+  where, 
+  updateDoc, 
+  doc, 
+  limit 
+} from "firebase/firestore";
 
 const LEGACY_PATIENT_NAMES = ["enzo", "douglas", "ricardo"];
 
@@ -12,64 +22,54 @@ function isLegacyPatient(patient: any) {
 }
 
 // ============================================
-// BUSCAR TODOS OS PACIENTES
+// BUSCAR TODOS OS PACIENTES (FIREBASE)
 // ============================================
 export const getPatients = async (): Promise<any[]> => {
   try {
-    const response = await fetch(API_URL);
-    const data = await response.json();
+    const querySnapshot = await getDocs(collection(db, "pacientes"));
+    const patients = querySnapshot.docs.map(documento => ({
+      firebaseId: documento.id,
+      ...documento.data()
+    }));
 
-    if (data && Array.isArray(data)) {
-      return data
-        .map((row: any) => ({
-          id: row.id || "",
-          name: row.name || "",
-          cpf: String(row.cpf || ""), // ← FORÇA COMO STRING
-          password: row.password || "",
-          dob: row.dob || "",
-          phone: row.phone || "",
-          address: row.address || "",
-          registeredAt: row.registeredAt || "",
-        }))
-        .filter((patient: any) => !isLegacyPatient(patient));
-    }
-    return [];
+    return patients.filter((patient: any) => !isLegacyPatient(patient));
   } catch (error) {
-    console.error("Erro ao buscar pacientes:", error);
+    console.error("❌ Erro ao buscar pacientes no Firebase:", error);
     return [];
   }
 };
 
 // ============================================
-// BUSCAR PACIENTE POR CPF
+// BUSCAR PACIENTE POR CPF (FIREBASE)
 // ============================================
 export const getPatientByCPF = async (cpf: string): Promise<any | null> => {
   try {
     const cpfLimpo = cpf.replace(/\D/g, "");
-    const patients = await getPatients();
-    const encontrado = patients.find((p: any) => {
-      const cpfPaciente = String(p.cpf).replace(/\D/g, "");
-      return cpfPaciente === cpfLimpo;
-    });
-    return encontrado || null;
+    const q = query(collection(db, "pacientes"), where("cpf", "==", cpfLimpo), limit(1));
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+      const docData = querySnapshot.docs[0];
+      return { firebaseId: docData.id, ...docData.data() };
+    }
+    return null;
   } catch (error) {
-    console.error("Erro ao buscar por CPF:", error);
+    console.error("❌ Erro ao buscar por CPF no Firebase:", error);
     return null;
   }
 };
 
 // ============================================
-// SALVAR PACIENTE
+// SALVAR PACIENTE (FIREBASE)
 // ============================================
 export const savePatient = async (patient: any): Promise<void> => {
   try {
-    // FORÇAR CPF COMO STRING (para preservar zeros no início)
     const pacienteParaSalvar = {
       id: String(patient.id || Date.now().toString()),
       role: patient.role || "paciente",
       specialty: patient.specialty || "",
       name: patient.name || "",
-      cpf: String(patient.cpf || ""),
+      cpf: String(patient.cpf || "").replace(/\D/g, ""), 
       password: patient.password || "",
       email: patient.email || "",
       dob: patient.dob || "",
@@ -98,65 +98,34 @@ export const savePatient = async (patient: any): Promise<void> => {
       finalRisk: patient.finalRisk || "low",
     };
 
-    console.log("📝 Salvando paciente:", pacienteParaSalvar);
+    await addDoc(collection(db, "pacientes"), pacienteParaSalvar);
+    console.log("✅ Paciente salvo no Firebase!");
 
-    const response = await fetch(API_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        data: pacienteParaSalvar,
-      }),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Erro ao salvar paciente: ${response.status} ${errorText}`);
-    }
-
-    const result = await response.json();
-    console.log("✅ Paciente salvo no SheetDB:", result);
-
-    // Também salva no localStorage para backup, eliminando duplicados por CPF
     const localPatients = JSON.parse(localStorage.getItem("patients") || "[]");
-    const newList = [...localPatients, pacienteParaSalvar];
-    const deduped = newList.filter((p: any, index: number) => {
-      const cpf = String(p.cpf || "").replace(/\D/g, "");
-      return index ===
-        newList.findIndex(
-          (item: any) => String(item.cpf || "").replace(/\D/g, "") === cpf,
-        );
-    });
-    localStorage.setItem("patients", JSON.stringify(deduped));
+    localStorage.setItem("patients", JSON.stringify([...localPatients, pacienteParaSalvar]));
+
   } catch (error) {
-    console.error("❌ Erro ao salvar paciente:", error);
+    console.error("❌ Erro ao salvar no Firebase:", error);
     throw error;
   }
 };
 
 // ============================================
-// ATUALIZAR PACIENTE
+// ATUALIZAR PACIENTE (FIREBASE)
 // ============================================
-export const updatePatient = async (
-  cpf: string,
-  updatedData: any,
-): Promise<void> => {
+export const updatePatient = async (cpf: string, updatedData: any): Promise<void> => {
   try {
     const cpfLimpo = cpf.replace(/\D/g, "");
-    await fetch(`${API_URL}/cpf/${cpfLimpo}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        data: updatedData,
-      }),
-    });
+    const q = query(collection(db, "pacientes"), where("cpf", "==", cpfLimpo), limit(1));
+    const querySnapshot = await getDocs(q);
 
-    console.log("✅ Paciente atualizado no SheetDB");
+    if (!querySnapshot.empty) {
+      const docRef = doc(db, "pacientes", querySnapshot.docs[0].id);
+      await updateDoc(docRef, updatedData);
+      console.log("✅ Paciente atualizado no Firebase");
+    }
   } catch (error) {
-    console.error("❌ Erro ao atualizar paciente:", error);
+    console.error("❌ Erro ao atualizar paciente no Firebase:", error);
     throw error;
   }
 };
