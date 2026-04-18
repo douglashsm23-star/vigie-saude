@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import { useLocation, useRoute } from "wouter";
 import * as Lucide from "lucide-react";
 import { useAuth } from "@/contexts";
-import { getPatientByCPF, savePatient } from "@/services/googleSheets";
+import { getPatientByCPF, savePatient } from "../services/googleSheets";
 import { getQuestionarioPorComorbidade } from "@/data/questionariosConfig";
 
 // ============================================
