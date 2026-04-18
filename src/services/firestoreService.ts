@@ -22,8 +22,10 @@ function isLegacyPatient(patient: any) {
 }
 
 // ============================================
-// BUSCAR TODOS OS PACIENTES (FIREBASE)
+// PACIENTES
 // ============================================
+
+// BUSCAR TODOS OS PACIENTES (FIREBASE)
 export const getPatients = async (): Promise<any[]> => {
   try {
     const querySnapshot = await getDocs(collection(db, "pacientes"));
@@ -39,9 +41,7 @@ export const getPatients = async (): Promise<any[]> => {
   }
 };
 
-// ============================================
 // BUSCAR PACIENTE POR CPF (FIREBASE)
-// ============================================
 export const getPatientByCPF = async (cpf: string): Promise<any | null> => {
   try {
     const cpfLimpo = cpf.replace(/\D/g, "");
@@ -59,9 +59,7 @@ export const getPatientByCPF = async (cpf: string): Promise<any | null> => {
   }
 };
 
-// ============================================
 // SALVAR PACIENTE (FIREBASE)
-// ============================================
 export const savePatient = async (patient: any): Promise<void> => {
   try {
     const pacienteParaSalvar = {
@@ -110,9 +108,7 @@ export const savePatient = async (patient: any): Promise<void> => {
   }
 };
 
-// ============================================
 // ATUALIZAR PACIENTE (FIREBASE)
-// ============================================
 export const updatePatient = async (cpf: string, updatedData: any): Promise<void> => {
   try {
     const cpfLimpo = cpf.replace(/\D/g, "");
@@ -126,6 +122,108 @@ export const updatePatient = async (cpf: string, updatedData: any): Promise<void
     }
   } catch (error) {
     console.error("❌ Erro ao atualizar paciente no Firebase:", error);
+    throw error;
+  }
+};
+
+// ============================================
+// PROFISSIONAIS
+// ============================================
+
+// BUSCAR TODOS OS PROFISSIONAIS
+export const getProfessionals = async (): Promise<any[]> => {
+  try {
+    const querySnapshot = await getDocs(collection(db, "profissionais"));
+    return querySnapshot.docs.map(doc => ({
+      firebaseId: doc.id,
+      ...doc.data()
+    }));
+  } catch (error) {
+    console.error("❌ Erro ao buscar profissionais:", error);
+    return [];
+  }
+};
+
+// BUSCAR PROFISSIONAL POR CPF
+export const getProfessionalByCPF = async (cpf: string): Promise<any | null> => {
+  try {
+    const cpfLimpo = cpf.replace(/\D/g, "");
+    const q = query(collection(db, "profissionais"), where("cpf", "==", cpfLimpo), limit(1));
+    const querySnapshot = await getDocs(q);
+    
+    if (!querySnapshot.empty) {
+      return { firebaseId: querySnapshot.docs[0].id, ...querySnapshot.docs[0].data() };
+    }
+    return null;
+  } catch (error) {
+    console.error("❌ Erro ao buscar profissional por CPF:", error);
+    return null;
+  }
+};
+
+// SALVAR PROFISSIONAL
+export const saveProfessional = async (professional: any): Promise<void> => {
+  try {
+    const profissionalParaSalvar = {
+      ...professional,
+      cpf: String(professional.cpf || "").replace(/\D/g, ""),
+      registeredAt: new Date().toISOString(),
+    };
+    await addDoc(collection(db, "profissionais"), profissionalParaSalvar);
+    console.log("✅ Profissional salvo no Firebase!");
+  } catch (error) {
+    console.error("❌ Erro ao salvar profissional:", error);
+    throw error;
+  }
+};
+
+// ============================================
+// ALUNOS
+// ============================================
+
+// BUSCAR TODOS OS ALUNOS
+export const getStudents = async (): Promise<any[]> => {
+  try {
+    const querySnapshot = await getDocs(collection(db, "alunos"));
+    return querySnapshot.docs.map(doc => ({
+      firebaseId: doc.id,
+      ...doc.data()
+    }));
+  } catch (error) {
+    console.error("❌ Erro ao buscar alunos:", error);
+    return [];
+  }
+};
+
+// BUSCAR ALUNO POR CPF
+export const getStudentByCPF = async (cpf: string): Promise<any | null> => {
+  try {
+    const cpfLimpo = cpf.replace(/\D/g, "");
+    const q = query(collection(db, "alunos"), where("cpf", "==", cpfLimpo), limit(1));
+    const querySnapshot = await getDocs(q);
+    
+    if (!querySnapshot.empty) {
+      return { firebaseId: querySnapshot.docs[0].id, ...querySnapshot.docs[0].data() };
+    }
+    return null;
+  } catch (error) {
+    console.error("❌ Erro ao buscar aluno por CPF:", error);
+    return null;
+  }
+};
+
+// SALVAR ALUNO
+export const saveStudent = async (student: any): Promise<void> => {
+  try {
+    const alunoParaSalvar = {
+      ...student,
+      cpf: String(student.cpf || "").replace(/\D/g, ""),
+      registeredAt: new Date().toISOString(),
+    };
+    await addDoc(collection(db, "alunos"), alunoParaSalvar);
+    console.log("✅ Aluno salvo no Firebase!");
+  } catch (error) {
+    console.error("❌ Erro ao salvar aluno:", error);
     throw error;
   }
 };
