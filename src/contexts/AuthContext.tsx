@@ -59,6 +59,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setError(null);
     try {
       const cpfLimpo = cpf.replace(/\D/g, "");
+      console.log("🔍 Buscando no Firebase:", cpfLimpo);
+      
       const q = query(collection(db, "usuarios"), where("cpf", "==", cpfLimpo));
       const querySnapshot = await getDocs(q);
 
@@ -68,6 +70,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       const userData = querySnapshot.docs[0].data() as UserProfile;
+      console.log("✅ Usuário encontrado no Firebase:", userData.name);
 
       if (userData.password === password) {
         setUser(userData);
@@ -87,6 +90,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setError(null);
     try {
       const cpfLimpo = profile.cpf.replace(/\D/g, "");
+      console.log("🔍 Verificando CPF no Firebase:", cpfLimpo);
       
       const q = query(collection(db, "usuarios"), where("cpf", "==", cpfLimpo));
       const querySnapshot = await getDocs(q);
@@ -96,6 +100,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return false;
       }
 
+      console.log("📝 Salvando no Firebase...");
       await addDoc(collection(db, "usuarios"), {
         ...profile,
         cpf: cpfLimpo,
@@ -103,6 +108,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
 
       setUser(profile);
+      console.log("✅ Usuário salvo no Firebase!");
       return true;
     } catch (err) {
       console.error("Erro no registro:", err);
