@@ -5,7 +5,7 @@ import {
   useEffect,
   type ReactNode,
 } from "react";
-import { db } from "@/services/firebase"; // Importamos o seu Firebase
+import { db } from "../services/firebase";
 import { collection, query, where, getDocs, addDoc } from "firebase/firestore";
 
 export type UserRole = "paciente" | "profissional" | "estudante";
@@ -55,14 +55,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     else localStorage.removeItem(STORAGE_KEY);
   }, [user]);
 
-  // ============================================
-  // LOGIN FIREBASE
-  // ============================================
   const login = async (cpf: string, password: string): Promise<boolean> => {
     setError(null);
     try {
       const cpfLimpo = cpf.replace(/\D/g, "");
-      // Busca na coleção "usuarios" do Firebase
       const q = query(collection(db, "usuarios"), where("cpf", "==", cpfLimpo));
       const querySnapshot = await getDocs(q);
 
@@ -87,15 +83,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // ============================================
-  // REGISTRO FIREBASE
-  // ============================================
   const register = async (profile: UserProfile): Promise<boolean> => {
     setError(null);
     try {
       const cpfLimpo = profile.cpf.replace(/\D/g, "");
       
-      // Verifica se CPF já existe no Firebase
       const q = query(collection(db, "usuarios"), where("cpf", "==", cpfLimpo));
       const querySnapshot = await getDocs(q);
       
@@ -104,7 +96,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return false;
       }
 
-      // Salva no Firebase
       await addDoc(collection(db, "usuarios"), {
         ...profile,
         cpf: cpfLimpo,
