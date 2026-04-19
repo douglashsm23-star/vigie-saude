@@ -96,12 +96,6 @@ export default function Login() {
             >
               Novo por aqui? <span className="text-blue-600 font-bold">Crie sua conta</span>
             </button>
-            <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-xs text-slate-600">
-              <p className="font-semibold text-slate-800 mb-2">Acessar como usuário de teste:</p>
-              <p>Profissional Odontologia: <span className="font-bold">CPF 11122233344 / senha odont@123</span></p>
-              <p>Profissional Medicina: <span className="font-bold">CPF 22233344455 / senha med@123</span></p>
-              <p>Paciente: <span className="font-bold">CPF 33344455566 / senha paciente123</span></p>
-            </div>
           </div>
         </div>
       </div>
