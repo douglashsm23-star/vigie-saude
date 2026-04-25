@@ -316,6 +316,45 @@ export default function NewPatient() {
       alert("Erro ao buscar paciente.");
     }
   };
+    // Buscar paciente no FIREBASE (nova função)
+  const buscarPacienteFirebase = async () => {
+    const cpfLimpo = unformatCPF(cpfTela);
+    if (cpfLimpo.length !== 11) {
+      alert("Digite um CPF válido com 11 números!");
+      return;
+    }
+
+    try {
+      const paciente = await getPatientByCPF(cpfLimpo);
+      if (paciente) {
+        // Carregar dados do paciente no formulário
+        setS1({
+          ...s1,
+          name: paciente.name || "",
+          cpf: paciente.cpf || "",
+          dob: paciente.dob || "",
+          phone: paciente.phone || "",
+          address: paciente.address || "",
+          weight: paciente.weight || "",
+          height: paciente.height || "",
+          historicoFamiliar: paciente.historicoFamiliar || [],
+          motivoConsulta: paciente.motivoConsulta || "",
+        });
+        setS2({
+          ...s2,
+          comorbidities: paciente.comorbidities || [],
+          medications: paciente.medications || "",
+          allergies: paciente.allergies || "",
+        });
+        alert("✅ Paciente encontrado no Firebase! Dados carregados.");
+      } else {
+        alert("Paciente não encontrado no Firebase. Preencha os dados para novo cadastro.");
+      }
+    } catch (error) {
+      console.error("Erro ao buscar paciente no Firebase:", error);
+      alert("Erro ao buscar paciente no Firebase.");
+    }
+  };
 
   const enviarWhatsApp = () => {
     const phone = s1.phone.replace(/\D/g, "");
@@ -678,30 +717,43 @@ ${s4.vereditoGeral.substring(0, 300)}...
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div className="relative">
-                <input
-                  className="w-full p-5 bg-slate-50 border rounded-[22px] text-sm font-bold outline-none pr-12"
-                  placeholder="CPF"
-                  value={cpfTela}
-                  onChange={handleCpfChange}
-                  maxLength={14}
-                />
-                <button
-                  onClick={buscarPacientePorCPF}
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 p-2 bg-[#7B2335] text-white rounded-full"
-                  title="Buscar paciente pelo CPF"
-                >
-                  <Lucide.Search size={16} />
-                </button>
-              </div>
-              <input
-                type="date"
-                className="p-5 bg-slate-50 border rounded-[22px] text-sm font-bold"
-                value={s1.dob}
-                onChange={(e) => setS1({ ...s1, dob: e.target.value })}
-              />
-            </div>
+      <div className="grid grid-cols-2 gap-3">
+  <div className="relative">
+    <input
+      className="w-full p-5 bg-slate-50 border rounded-[22px] text-sm font-bold outline-none pr-12"
+      placeholder="CPF"
+      value={cpfTela}
+      onChange={handleCpfChange}
+      maxLength={14}
+    />
+    {/* Botão 1: Busca LOCAL (localStorage) - Lupa */}
+    <button
+      onClick={buscarPacientePorCPF}
+      className="absolute right-2 top-1/2 transform -translate-y-1/2 p-2 bg-[#7B2335] text-white rounded-full"
+      title="Buscar paciente pelo CPF"
+    >
+      <Lucide.Search size={16} />
+    </button>
+  </div>
+  <input
+    type="date"
+    className="p-5 bg-slate-50 border rounded-[22px] text-sm font-bold"
+    value={s1.dob}
+    onChange={(e) => setS1({ ...s1, dob: e.target.value })}
+  />
+</div>
+
+{/* Botão 2: Busca FIREBASE - NUVEM (NOVO) */}
+<div className="flex justify-end mt-2">
+  <button
+    onClick={buscarPacienteFirebase}
+    className="px-4 py-2 bg-green-600 text-white rounded-xl text-sm font-bold flex items-center gap-2"
+    title="Buscar no Firebase"
+  >
+    <Lucide.Cloud size={16} />
+    Buscar no Firebase
+  </button>
+</div>
 
             {/* Idade calculada */}
             {s1.dob && (

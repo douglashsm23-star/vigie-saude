@@ -62,7 +62,7 @@ export default function Dashboard() {
 
       <main className="max-w-4xl mx-auto px-4 pt-8 space-y-6">
         
-        {/* Banner Principal - Douglas */}
+        {/* Banner Principal */}
         <div className="bg-white rounded-[40px] p-8 shadow-2xl shadow-slate-200 border border-white flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="text-center md:text-left">
             <p className="text-blue-600 font-black text-xs uppercase tracking-[0.3em] mb-2">
@@ -82,7 +82,7 @@ export default function Dashboard() {
               className="bg-[#7B2335] hover:scale-105 text-white px-10 py-5 rounded-[24px] font-black shadow-2xl shadow-red-900/20 transition-all flex items-center gap-3"
             >
               <Lucide.UserPlus size={24} />
-              NOVO PACIENTE
+              NOVA CONSULTA
             </button>
             <button
               onClick={() => setLocation("/pacientes")}
