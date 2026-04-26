@@ -4,6 +4,7 @@ import * as Lucide from "lucide-react";
 import { useAuth } from "@/contexts";
 import { getPatientByCPF, savePatient } from "../services/firestoreService";
 import { getQuestionarioPorComorbidade } from "@/data/questionariosConfig";
+import BuscarPaciente from "../components/BuscarPaciente";
 
 // ============================================
 // FUNÇÕES AUXILIARES (TODAS JUNTAS AQUI)
@@ -702,6 +703,24 @@ ${s4.vereditoGeral.substring(0, 300)}...
       </div>
 
       <div className="max-w-lg mx-auto p-6 space-y-8">
+        <BuscarPaciente
+    onPacienteEncontrado={(paciente) => {
+      console.log("Paciente encontrado:", paciente);
+      setS1(prev => ({ 
+        ...prev, 
+        name: paciente.name || "", 
+        cpf: paciente.cpf || "", 
+        dob: paciente.dob || "",
+        phone: paciente.phone || "",
+        address: paciente.address || "",
+      }));
+      setStep(1);
+    }}
+    onNovoCadastro={() => {
+      console.log("Novo cadastro");
+      setStep(1);
+    }}
+  />
         {step === 0 && (
           <div className="space-y-6 animate-in fade-in">
             <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest text-center block">
