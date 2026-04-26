@@ -102,7 +102,7 @@ export default function NewPatient() {
   const [, params] = useRoute("/pacientes/novo/:specialty");
   const { user } = useAuth();
   const photoRef = useRef<HTMLInputElement>(null);
-  const [step, setStep] = useState(0);
+const [step, setStep] = useState(-1);
   const [lastConsultDate, setLastConsultDate] = useState("");
   const [painLevel, setPainLevel] = useState(0);
 
@@ -685,42 +685,47 @@ ${s4.vereditoGeral.substring(0, 300)}...
             )
           }
         >
-          <Lucide.ChevronLeft size={24} className="text-[#7B2335]" />
-        </button>
-        <h1 className="font-black text-sm text-[#7B2335] uppercase italic">
-          {isDentista ? "Nova Consulta Odontológica" : "Nova Consulta Médica"}
-        </h1>
-        <button
-          onClick={enviarWhatsApp}
-          className="ml-auto p-2 bg-green-100 rounded-full hover:bg-green-200 transition-all"
-          title="Enviar resumo por WhatsApp"
-        >
-          <Lucide.MessageCircle size={18} className="text-green-600" />
-        </button>
-        <div className="text-xs font-bold text-slate-400">
-          Step {step + 1}/{totalSteps}
-        </div>
-      </div>
+    <Lucide.ChevronLeft size={24} className="text-[#7B2335]" />
+</button>
+<h1 className="font-black text-sm text-[#7B2335] uppercase italic">
+  {isDentista ? "Nova Consulta Odontológica" : "Nova Consulta Médica"}
+</h1>
+<button
+  onClick={enviarWhatsApp}
+  className="ml-auto p-2 bg-green-100 rounded-full hover:bg-green-200 transition-all"
+  title="Enviar resumo por WhatsApp"
+>
+  <Lucide.MessageCircle size={18} className="text-green-600" />
+</button>
+{/* Só mostra o contador de steps se não estiver na busca (step !== -1) */}
+{step !== -1 && (
+  <div className="text-xs font-bold text-slate-400">
+    Step {step + 1}/{totalSteps}
+  </div>
+)}
 
-      <div className="max-w-lg mx-auto p-6 space-y-8">
-        <BuscarPaciente
-    onPacienteEncontrado={(paciente) => {
-      console.log("Paciente encontrado:", paciente);
-      setS1(prev => ({ 
-        ...prev, 
-        name: paciente.name || "", 
-        cpf: paciente.cpf || "", 
-        dob: paciente.dob || "",
-        phone: paciente.phone || "",
-        address: paciente.address || "",
-      }));
-      setStep(1);
-    }}
-    onNovoCadastro={() => {
-      console.log("Novo cadastro");
-      setStep(1);
-    }}
-  />
+<div className="max-w-lg mx-auto p-6 space-y-8">
+  {/* Step -1: BUSCAR PACIENTE */}
+  {step === -1 && (
+    <BuscarPaciente
+      onPacienteEncontrado={(paciente) => {
+        console.log("Paciente encontrado:", paciente);
+        setS1(prev => ({ 
+          ...prev, 
+          name: paciente.name || "", 
+          cpf: paciente.cpf || "", 
+          dob: paciente.dob || "",
+          phone: paciente.phone || "",
+          address: paciente.address || "",
+        }));
+        setStep(0);
+      }}
+      onNovoCadastro={() => {
+        console.log("Novo cadastro");
+        setStep(0);
+      }}
+    />
+  )}
         {step === 0 && (
           <div className="space-y-6 animate-in fade-in">
             <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest text-center block">
@@ -1744,32 +1749,32 @@ ${s4.vereditoGeral.substring(0, 300)}...
         )}
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 p-6 bg-white/95 backdrop-blur-md border-t z-50">
-        <div className="max-w-lg mx-auto flex gap-3">
-          {step > 0 && (
-            <button
-              type="button"
-              onClick={() => setStep(step - 1)}
-              className="flex-1 py-6 bg-slate-200 text-slate-600 rounded-[28px] font-black shadow-2xl uppercase tracking-widest text-xs transition-all active:scale-95"
-            >
-              VOLTAR
-            </button>
-          )}
-          <button
-            type="button"
-            onClick={() => {
-              if (step === 4) {
-                handleFinish();
-              } else {
-                setStep(step + 1);
-              }
-            }}
-            className={`${step > 0 ? "flex-1" : "w-full"} py-6 bg-[#7B2335] text-white rounded-[28px] font-black shadow-2xl uppercase tracking-widest text-xs transition-all active:scale-95`}
-          >
-            {step === 4 ? "FINALIZAR ATENDIMENTO" : "PRÓXIMO PASSO"}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
+     <div className="fixed bottom-0 left-0 right-0 p-6 bg-white/95 backdrop-blur-md border-t z-50">
+  <div className="max-w-lg mx-auto flex gap-3">
+    {step > -1 && (
+      <button
+        type="button"
+        onClick={() => setStep(step - 1)}
+        className="flex-1 py-6 bg-slate-200 text-slate-600 rounded-[28px] font-black shadow-2xl uppercase tracking-widest text-xs transition-all active:scale-95"
+      >
+        VOLTAR
+      </button>
+    )}
+    <button
+      type="button"
+      onClick={() => {
+        if (step === 4) {
+          handleFinish();
+        } else {
+          setStep(step + 1);
+        }
+      }}
+      className={`${step > -1 ? "flex-1" : "w-full"} py-6 bg-[#7B2335] text-white rounded-[28px] font-black shadow-2xl uppercase tracking-widest text-xs transition-all active:scale-95`}
+    >
+      {step === -1 ? "BUSCAR" : step === 4 ? "FINALIZAR ATENDIMENTO" : "PRÓXIMO PASSO"}
+    </button>
+  </div>
+</div>
+  </div>
+    );
+    } 
