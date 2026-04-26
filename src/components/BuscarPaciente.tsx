@@ -13,6 +13,7 @@ export default function BuscarPaciente({ onPacienteEncontrado, onNovoCadastro }:
   const [dataNascimento, setDataNascimento] = useState("");
   const [buscando, setBuscando] = useState(false);
   const [pacienteEncontrado, setPacienteEncontrado] = useState<any>(null);
+  const [modo, setModo] = useState<"busca" | "cadastro" | "pacienteExistente">("busca");
 
   const formatarCPF = (valor: string) => {
     const numeros = valor.replace(/\D/g, "").slice(0, 11);
@@ -38,9 +39,10 @@ export default function BuscarPaciente({ onPacienteEncontrado, onNovoCadastro }:
       
       if (paciente) {
         setPacienteEncontrado(paciente);
+        setModo("pacienteExistente");
         onPacienteEncontrado(paciente);
       } else {
-        alert("Paciente não encontrado. Deseja cadastrar um novo?");
+        setModo("cadastro");
         onNovoCadastro();
       }
     } catch (error) {
@@ -51,8 +53,9 @@ export default function BuscarPaciente({ onPacienteEncontrado, onNovoCadastro }:
     }
   };
 
-  return (
-    <div className="space-y-6">
+  // MODO 1: TELA DE BUSCA
+  if (modo === "busca") {
+    return (
       <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
         <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
           <Lucide.Search size={20} className="text-[#7B2335]" />
@@ -102,14 +105,28 @@ export default function BuscarPaciente({ onPacienteEncontrado, onNovoCadastro }:
           </button>
         </div>
       </div>
+    );
+  }
 
-      {pacienteEncontrado && (
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
-          <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-            <Lucide.User size={20} className="text-[#7B2335]" />
-            INFORMAÇÕES DO PACIENTE
+  // MODO 2: PACIENTE JÁ CADASTRADO - MOSTRA CARD
+  if (modo === "pacienteExistente" && pacienteEncontrado) {
+    return (
+      <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+            <Lucide.UserCheck size={20} className="text-green-600" />
+            PACIENTE CADASTRADO
           </h2>
-          
+          <button
+            onClick={() => setModo("busca")}
+            className="text-sm text-[#7B2335] hover:underline"
+          >
+            Buscar outro
+          </button>
+        </div>
+        
+        {/* CARD DO PACIENTE */}
+        <div className="border rounded-xl p-4">
           <div className="flex items-center gap-4 mb-4">
             <div className="w-16 h-16 bg-[#7B2335] rounded-full flex items-center justify-center text-white text-2xl font-bold">
               {pacienteEncontrado.name?.charAt(0) || "P"}
@@ -117,48 +134,67 @@ export default function BuscarPaciente({ onPacienteEncontrado, onNovoCadastro }:
             <div>
               <p className="font-bold text-xl">{pacienteEncontrado.name}</p>
               <p className="text-slate-500">{pacienteEncontrado.cpf}</p>
+              <p className="text-slate-500">{pacienteEncontrado.dob || ""}</p>
             </div>
           </div>
           
-          <div className="grid grid-cols-2 gap-4 mb-4">
+          <div className="grid grid-cols-2 gap-3 mb-4">
             <div className="bg-slate-50 p-3 rounded-xl">
               <p className="text-xs text-slate-500">CADASTRO INICIAL</p>
-              <p className="font-bold">{pacienteEncontrado.registeredBy || "Não informado"}</p>
+              <p className="font-bold text-sm">{pacienteEncontrado.registeredBy || "Não informado"}</p>
             </div>
             <div className="bg-slate-50 p-3 rounded-xl">
               <p className="text-xs text-slate-500">ÚLTIMO ATENDIMENTO</p>
-              <p className="font-bold">{pacienteEncontrado.lastDoctor || "Não informado"}</p>
-              <p className="text-xs text-slate-400">{pacienteEncontrado.lastConsultDate || ""}</p>
+              <p className="font-bold text-sm">{pacienteEncontrado.lastDoctor || "Não informado"}</p>
             </div>
           </div>
           
           {pacienteEncontrado.alergias && (
-            <div className="bg-amber-50 p-4 rounded-xl mb-4">
-              <p className="font-bold text-amber-800 mb-2 flex items-center gap-2">
-                <Lucide.AlertCircle size={16} /> ALERTAS
+            <div className="bg-amber-50 p-3 rounded-xl mb-4">
+              <p className="font-bold text-amber-800 text-sm flex items-center gap-2">
+                <Lucide.AlertTriangle size={14} /> ALERTAS
               </p>
-              <p className="text-red-600 flex items-center gap-2">
-                <Lucide.AlertTriangle size={14} /> Reação alérgica: {pacienteEncontrado.alergias}
-              </p>
+              <p className="text-red-600 text-sm">{pacienteEncontrado.alergias}</p>
             </div>
           )}
           
-          <div className="flex gap-3">
-            <button
-              onClick={() => onPacienteEncontrado(pacienteEncontrado)}
-              className="flex-1 bg-[#7B2335] text-white py-3 rounded-xl font-bold hover:bg-[#8B2B45] transition-all"
-            >
-              INICIAR CONSULTA
-            </button>
-            <button
-              onClick={() => {/* Abrir exames */}}
-              className="flex-1 bg-slate-200 text-slate-700 py-3 rounded-xl font-bold hover:bg-slate-300 transition-all"
-            >
-              VER EXAMES
-            </button>
-          </div>
+          <button
+            onClick={() => onPacienteEncontrado(pacienteEncontrado)}
+            className="w-full bg-[#7B2335] text-white py-3 rounded-xl font-bold hover:bg-[#8B2B45] transition-all"
+          >
+            INICIAR CONSULTA
+          </button>
         </div>
-      )}
-    </div>
-  );
+      </div>
+    );
+  }
+
+  // MODO 3: NOVO CADASTRO - FORMULÁRIO
+  if (modo === "cadastro") {
+    return (
+      <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+            <Lucide.UserPlus size={20} className="text-[#7B2335]" />
+            NOVO CADASTRO
+          </h2>
+          <button
+            onClick={() => setModo("busca")}
+            className="text-sm text-[#7B2335] hover:underline"
+          >
+            Buscar outro
+          </button>
+        </div>
+        
+        <button
+          onClick={onNovoCadastro}
+          className="w-full bg-[#7B2335] text-white py-3 rounded-xl font-bold hover:bg-[#8B2B45] transition-all"
+        >
+          CONTINUAR PARA CADASTRO
+        </button>
+      </div>
+    );
+  }
+
+  return null;
 }
