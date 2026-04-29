@@ -712,30 +712,37 @@ ${s4.vereditoGeral.substring(0, 300)}...
   </div>
 </div>
 <div className="max-w-lg mx-auto p-6 space-y-8">
-  {/* Step -1: BUSCAR PACIENTE */}
-  {step === -1 && (
-  <BuscarPaciente
-    onPacienteEncontrado={(paciente) => {
-      setS1(prev => ({ ...prev, ...paciente }));
-      setStep(0);
-    }}
-    onNovoCadastro={() => setStep(0)}
-  />
+  {/* Step -1: BUSCAR PACIENTE (Fica sozinho nesta tela) */}
+{step === -1 && (
+  <div className="animate-in fade-in duration-500">
+    <BuscarPaciente
+      onPacienteEncontrado={(paciente) => {
+        setS1(prev => ({ ...prev, ...paciente }));
+        setCpfTela(formatCPF(paciente.cpf || ""));
+        setStep(0); // Quando encontra, pula para a Identificação Civil
+      }}
+      onNovoCadastro={() => setStep(0)} // Se for novo, também pula para o Step 0
+    />
+  </div>
 )}
-        {step === 0 && (
-          <div className="space-y-6 animate-in fade-in">
-            <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest text-center block">
-              Identificação Civil
-            </label>
+      {/* Step 0: IDENTIFICAÇÃO CIVIL (Só aparece após a busca ou decisão de novo cadastro) */}
+{step === 0 && (
+  <div className="space-y-6 animate-in slide-in-from-right duration-500">
+    <div className="flex flex-col items-center mb-4">
+      <div className="w-12 h-1 bg-[#7B2335] rounded-full mb-2 opacity-20"></div>
+      <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest text-center block">
+        Identificação Civil
+      </label>
+    </div>
 
-            <div className="flex gap-2">
-              <input
-                className="flex-1 p-5 bg-slate-50 border rounded-[22px] font-bold outline-none"
-                placeholder="Nome Completo"
-                value={s1.name}
-                onChange={(e) => setS1({ ...s1, name: e.target.value })}
-              />
-            </div>
+         <div className="flex gap-2">
+      <input
+        className="flex-1 p-5 bg-slate-50 border rounded-[22px] font-bold outline-none focus:border-[#7B2335] transition-all"
+        placeholder="Nome Completo"
+        value={s1.name}
+        onChange={(e) => setS1({ ...s1, name: e.target.value })}
+      />
+    </div>
 
       <div className="grid grid-cols-2 gap-3">
   <div className="relative">
