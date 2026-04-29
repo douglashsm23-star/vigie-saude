@@ -675,35 +675,42 @@ ${s4.vereditoGeral.substring(0, 300)}...
 
   return (
     <div className="min-h-screen bg-white pb-40">
-      <div className="sticky top-0 z-50 bg-white border-b p-4 flex items-center gap-4 shadow-sm">
-        <button
-          onClick={() =>
-            setLocation(
-              user?.specialty === "odontologia"
-                ? "/dentista/dashboard"
-                : "/medico/dashboard",
-            )
-          }
-        >
-    <Lucide.ChevronLeft size={24} className="text-[#7B2335]" />
-</button>
-<h1 className="font-black text-sm text-[#7B2335] uppercase italic">
-  {isDentista ? "Nova Consulta Odontológica" : "Nova Consulta Médica"}
-</h1>
-<button
-  onClick={enviarWhatsApp}
-  className="ml-auto p-2 bg-green-100 rounded-full hover:bg-green-200 transition-all"
-  title="Enviar resumo por WhatsApp"
->
-  <Lucide.MessageCircle size={18} className="text-green-600" />
-</button>
-{/* Só mostra o contador de steps se não estiver na busca (step !== -1) */}
-{step !== -1 && (
-  <div className="text-xs font-bold text-slate-400">
-    Step {step + 1}/{totalSteps}
-  </div>
-)}
+<div className="sticky top-0 z-50 bg-white border-b shadow-sm">
+  <div className="max-w-lg mx-auto px-4 py-3 flex items-center justify-between gap-3">
+    <button
+      onClick={() =>
+        setLocation(
+          user?.specialty === "odontologia"
+            ? "/dentista/dashboard"
+            : "/medico/dashboard",
+        )
+      }
+      className="p-2 hover:bg-slate-100 rounded-full transition-all shrink-0"
+    >
+      <Lucide.ChevronLeft size={24} className="text-[#7B2335]" />
+    </button>
 
+    <h1 className="font-black text-sm text-[#7B2335] uppercase italic text-center flex-1">
+      {isDentista ? "Nova Consulta Odontológica" : "Nova Consulta Médica"}
+    </h1>
+
+    <div className="flex items-center gap-2 shrink-0">
+      <button
+        onClick={enviarWhatsApp}
+        className="p-2 bg-green-100 rounded-full hover:bg-green-200 transition-all"
+        title="Enviar resumo por WhatsApp"
+      >
+        <Lucide.MessageCircle size={18} className="text-green-600" />
+      </button>
+      
+      {step !== -1 && (
+        <div className="text-xs font-bold text-slate-400 bg-slate-100 px-3 py-1.5 rounded-full">
+          Step {step + 1}/{totalSteps}
+        </div>
+      )}
+    </div>
+  </div>
+</div>
 <div className="max-w-lg mx-auto p-6 space-y-8">
   {/* Step -1: BUSCAR PACIENTE */}
   {step === -1 && (
@@ -1670,7 +1677,7 @@ ${s4.vereditoGeral.substring(0, 300)}...
           </div>
         )}
 
-        {step === 4 && (
+ {step === 4 && (
           <div className="space-y-8 animate-in fade-in duration-700 pb-32">
             <div className="mt-4 mb-6">
               <label className="text-[10px] font-black uppercase text-slate-400 ml-2 mb-2 block tracking-widest text-center">
@@ -1680,9 +1687,7 @@ ${s4.vereditoGeral.substring(0, 300)}...
                 className="w-full p-5 bg-slate-50 border rounded-[22px] text-sm font-bold outline-none min-h-[80px] resize-none"
                 placeholder="Ex: Encaminhado para Bucomaxilo..."
                 value={s4.encaminhamento}
-                onChange={(e) =>
-                  setS4({ ...s4, encaminhamento: e.target.value })
-                }
+                onChange={(e) => setS4({ ...s4, encaminhamento: e.target.value })}
               />
             </div>
 
@@ -1690,28 +1695,17 @@ ${s4.vereditoGeral.substring(0, 300)}...
               <div
                 className="w-32 h-32 rounded-full border-8 flex items-center justify-center shadow-xl bg-white"
                 style={{
-                  borderColor:
-                    checkDTMRisk()
-                      ?.color?.replace("text", "border")
-                      ?.replace("600", "500") || "#eee",
+                  borderColor: checkDTMRisk()?.color?.replace("text", "border")?.replace("600", "500") || "#eee",
                 }}
               >
-                <div
-                  className={`text-center font-black leading-tight ${checkDTMRisk()?.color || "text-slate-400"}`}
-                >
-                  <span className="text-xs uppercase block font-bold">
-                    Risco
-                  </span>
-                  <span className="text-xl">
-                    {checkDTMRisk()?.status?.split(" ")[1] || "---"}
-                  </span>
+                <div className={`text-center font-black leading-tight ${checkDTMRisk()?.color || "text-slate-400"}`}>
+                  <span className="text-xs uppercase block font-bold">Risco</span>
+                  <span className="text-xl">{checkDTMRisk()?.status?.split(" ")[1] || "---"}</span>
                 </div>
               </div>
 
               <div className="text-center space-y-2">
-                <h2 className="text-2xl font-black uppercase text-slate-800 leading-tight">
-                  Resultado da Triagem
-                </h2>
+                <h2 className="text-2xl font-black uppercase text-slate-800 leading-tight">Resultado da Triagem</h2>
                 <p className="text-sm text-slate-500 font-medium max-w-[280px]">
                   {checkDTMRisk()?.desc || "Análise clínica processada."}
                 </p>
@@ -1719,55 +1713,48 @@ ${s4.vereditoGeral.substring(0, 300)}...
 
               <div className="w-full bg-slate-50 rounded-[22px] p-5 border border-slate-100 space-y-3 shadow-sm">
                 <div className="flex justify-between items-center">
-                  <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">
-                    Paciente
-                  </span>
-                  <span className="text-sm font-bold text-slate-700">
-                    {s1.name || "Não informado"}
-                  </span>
+                  <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Paciente</span>
+                  <span className="text-sm font-bold text-slate-700">{s1.name || "Não informado"}</span>
                 </div>
                 <div className="h-[1px] bg-slate-200 w-full" />
                 <div className="text-[11px] text-slate-600 italic leading-relaxed">
-                  {s4.vereditoGeral
-                    ? s4.vereditoGeral.substring(0, 120) + "..."
-                    : "Resumo gerado."}
+                  {s4.vereditoGeral ? s4.vereditoGeral.substring(0, 120) + "..." : "Resumo gerado."}
                 </div>
               </div>
             </div>
           </div>
         )}
-       </div>  {/* fecha a div da área principal (steps) */}
-  </div>    {/* fecha a div de conteúdo principal (max-w-lg) */}
+      </div>  {/* fecha a div max-w-lg */}
+    </div>    {/* fecha a div principal (min-h-screen) */}
 
-  {/* Botões fixos */}
-  <div className="fixed bottom-0 left-0 right-0 p-6 bg-white/95 backdrop-blur-md border-t z-50">
-    <div className="max-w-lg mx-auto flex gap-3">
-      {step > -1 && (
+    {/* Botões fixos */}
+    <div className="fixed bottom-0 left-0 right-0 p-6 bg-white/95 backdrop-blur-md border-t z-50">
+      <div className="max-w-lg mx-auto flex gap-3">
+        {step > -1 && (
+          <button
+            type="button"
+            onClick={() => setStep(step - 1)}
+            className="flex-1 py-6 bg-slate-200 text-slate-600 rounded-[28px] font-black shadow-2xl uppercase tracking-widest text-xs transition-all active:scale-95"
+          >
+            VOLTAR
+          </button>
+        )}
         <button
           type="button"
-          onClick={() => setStep(step - 1)}
-          className="flex-1 py-6 bg-slate-200 text-slate-600 rounded-[28px] font-black shadow-2xl uppercase tracking-widest text-xs transition-all active:scale-95"
+          onClick={() => {
+            if (step === -1) {
+              // Busca já é gerenciada pelo componente
+            } else if (step === 4) {
+              handleFinish();
+            } else {
+              setStep(step + 1);
+            }
+          }}
+          className={`${step > -1 ? "flex-1" : "w-full"} py-6 bg-[#7B2335] text-white rounded-[28px] font-black shadow-2xl uppercase tracking-widest text-xs transition-all active:scale-95`}
         >
-          VOLTAR
+          {step === -1 ? "BUSCAR" : step === 4 ? "FINALIZAR ATENDIMENTO" : "PRÓXIMO PASSO"}
         </button>
-      )}
-      <button
-        type="button"
-        onClick={() => {
-          if (step === -1) {
-            // Busca gerenciada pelo componente
-          } else if (step === 4) {
-            handleFinish();
-          } else {
-            setStep(step + 1);
-          }
-        }}
-        className={`${step > -1 ? "flex-1" : "w-full"} py-6 bg-[#7B2335] text-white rounded-[28px] font-black shadow-2xl uppercase tracking-widest text-xs transition-all active:scale-95`}
-      >
-        {step === -1 ? "BUSCAR" : step === 4 ? "FINALIZAR ATENDIMENTO" : "PRÓXIMO PASSO"}
-      </button>
+      </div>
     </div>
-  </div>
-</div>
-);
+  );
 }
