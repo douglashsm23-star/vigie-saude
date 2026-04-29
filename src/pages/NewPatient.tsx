@@ -707,25 +707,14 @@ ${s4.vereditoGeral.substring(0, 300)}...
 <div className="max-w-lg mx-auto p-6 space-y-8">
   {/* Step -1: BUSCAR PACIENTE */}
   {step === -1 && (
-    <BuscarPaciente
-      onPacienteEncontrado={(paciente) => {
-        console.log("Paciente encontrado:", paciente);
-        setS1(prev => ({ 
-          ...prev, 
-          name: paciente.name || "", 
-          cpf: paciente.cpf || "", 
-          dob: paciente.dob || "",
-          phone: paciente.phone || "",
-          address: paciente.address || "",
-        }));
-        setStep(0);
-      }}
-      onNovoCadastro={() => {
-        console.log("Novo cadastro");
-        setStep(0);
-      }}
-    />
-  )}
+  <BuscarPaciente
+    onPacienteEncontrado={(paciente) => {
+      setS1(prev => ({ ...prev, ...paciente }));
+      setStep(0);
+    }}
+    onNovoCadastro={() => setStep(0)}
+  />
+)}
         {step === 0 && (
           <div className="space-y-6 animate-in fade-in">
             <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest text-center block">
@@ -1747,34 +1736,38 @@ ${s4.vereditoGeral.substring(0, 300)}...
             </div>
           </div>
         )}
-      </div>
+       </div>  {/* fecha a div da área principal (steps) */}
+  </div>    {/* fecha a div de conteúdo principal (max-w-lg) */}
 
-     <div className="fixed bottom-0 left-0 right-0 p-6 bg-white/95 backdrop-blur-md border-t z-50">
-  <div className="max-w-lg mx-auto flex gap-3">
-    {step > -1 && (
+  {/* Botões fixos */}
+  <div className="fixed bottom-0 left-0 right-0 p-6 bg-white/95 backdrop-blur-md border-t z-50">
+    <div className="max-w-lg mx-auto flex gap-3">
+      {step > -1 && (
+        <button
+          type="button"
+          onClick={() => setStep(step - 1)}
+          className="flex-1 py-6 bg-slate-200 text-slate-600 rounded-[28px] font-black shadow-2xl uppercase tracking-widest text-xs transition-all active:scale-95"
+        >
+          VOLTAR
+        </button>
+      )}
       <button
         type="button"
-        onClick={() => setStep(step - 1)}
-        className="flex-1 py-6 bg-slate-200 text-slate-600 rounded-[28px] font-black shadow-2xl uppercase tracking-widest text-xs transition-all active:scale-95"
+        onClick={() => {
+          if (step === -1) {
+            // Busca gerenciada pelo componente
+          } else if (step === 4) {
+            handleFinish();
+          } else {
+            setStep(step + 1);
+          }
+        }}
+        className={`${step > -1 ? "flex-1" : "w-full"} py-6 bg-[#7B2335] text-white rounded-[28px] font-black shadow-2xl uppercase tracking-widest text-xs transition-all active:scale-95`}
       >
-        VOLTAR
+        {step === -1 ? "BUSCAR" : step === 4 ? "FINALIZAR ATENDIMENTO" : "PRÓXIMO PASSO"}
       </button>
-    )}
-    <button
-      type="button"
-      onClick={() => {
-        if (step === 4) {
-          handleFinish();
-        } else {
-          setStep(step + 1);
-        }
-      }}
-      className={`${step > -1 ? "flex-1" : "w-full"} py-6 bg-[#7B2335] text-white rounded-[28px] font-black shadow-2xl uppercase tracking-widest text-xs transition-all active:scale-95`}
-    >
-      {step === -1 ? "BUSCAR" : step === 4 ? "FINALIZAR ATENDIMENTO" : "PRÓXIMO PASSO"}
-    </button>
+    </div>
   </div>
 </div>
-  </div>
-    );
-    } 
+);
+}
