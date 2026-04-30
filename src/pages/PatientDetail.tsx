@@ -1,4 +1,3 @@
-import HistoricoRespostas from "../components/HistoricoRespostas";
 import { Link, useParams } from "wouter";
 import {
   ChevronLeft,
@@ -14,8 +13,8 @@ import {
 } from "lucide-react";
 import { patients } from "@/data/patients";
 import { getStoredPatients } from "@/store/patientStore";
+import HistoricoRespostas from "../components/HistoricoRespostas";
 
-// Mapeamento de cores para cada patologia
 const pathologyColors: Record<string, string> = {
   Diabetes: "bg-blue-100 text-blue-800 border-blue-300",
   Hipertensão: "bg-red-100 text-red-800 border-red-300",
@@ -39,12 +38,9 @@ const pathologyColors: Record<string, string> = {
 
 export default function PatientDetail() {
   const params = useParams<{ id: string }>();
-
   const storedPatients = getStoredPatients();
   const allPatients = [...patients, ...storedPatients];
-  const patient = allPatients.find(
-    (p) => String(p.id) === String(params.id),
-  ) as any;
+  const patient = allPatients.find((p) => String(p.id) === String(params.id)) as any;
 
   if (!patient) {
     return (
@@ -61,18 +57,14 @@ export default function PatientDetail() {
     );
   }
 
-  const statusColor =
-    patient.status === "critical" || patient.finalRisk === "high"
-      ? "#EF4444"
-      : patient.status === "attention" || patient.finalRisk === "medium"
-        ? "#F59E0B"
-        : "#10B981";
+  const statusColor = patient.status === "critical" || patient.finalRisk === "high"
+    ? "#EF4444"
+    : patient.status === "attention" || patient.finalRisk === "medium"
+      ? "#F59E0B"
+      : "#10B981";
 
   const getComorbidityColor = (comorbidity: string) => {
-    return (
-      pathologyColors[comorbidity] ||
-      "bg-gray-100 text-gray-800 border-gray-300"
-    );
+    return pathologyColors[comorbidity] || "bg-gray-100 text-gray-800 border-gray-300";
   };
 
   return (
@@ -99,20 +91,10 @@ export default function PatientDetail() {
       <div className="max-w-lg mx-auto px-4 pt-6 space-y-5">
         {/* Card de Identificação */}
         <div className="bg-white rounded-[32px] border border-slate-200 p-6 shadow-sm relative overflow-hidden">
-          <div
-            className="absolute top-0 left-0 w-2.5 h-full"
-            style={{ backgroundColor: statusColor }}
-          ></div>
+          <div className="absolute top-0 left-0 w-2.5 h-full" style={{ backgroundColor: statusColor }}></div>
           <div className="flex items-center gap-5">
-            <div
-              className="w-16 h-16 rounded-full flex items-center justify-center text-white font-black text-xl shadow-lg"
-              style={{ background: statusColor }}
-            >
-              {patient.name
-                .split(" ")
-                .slice(0, 2)
-                .map((n: string) => n[0])
-                .join("")}
+            <div className="w-16 h-16 rounded-full flex items-center justify-center text-white font-black text-xl shadow-lg" style={{ background: statusColor }}>
+              {patient.name.split(" ").slice(0, 2).map((n: string) => n[0]).join("")}
             </div>
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-1.5">
@@ -133,9 +115,7 @@ export default function PatientDetail() {
                   D+{patient.daysPostProcedure || 0}
                 </span>
               </div>
-              <p className="text-sm font-black text-slate-800">
-                {patient.age || "N/A"} anos
-              </p>
+              <p className="text-sm font-black text-slate-800">{patient.age || "N/A"} anos</p>
               <p className="text-xs font-bold text-slate-400 italic">
                 Dr(a). {patient.doctor || patient.responsible || "Douglas"}
               </p>
@@ -145,21 +125,11 @@ export default function PatientDetail() {
           {/* Nível de dor */}
           <div className="mt-6 pt-5 border-t border-slate-100">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-[11px] font-black text-slate-500 uppercase">
-                Nível de dor atual
-              </span>
-              <span
-                className="text-sm font-black"
-                style={{ color: statusColor }}
-              >
-                {patient.painLevel || 0}/10
-              </span>
+              <span className="text-[11px] font-black text-slate-500 uppercase">Nível de dor atual</span>
+              <span className="text-sm font-black" style={{ color: statusColor }}>{patient.painLevel || 0}/10</span>
             </div>
             <div className="w-full h-3 rounded-full bg-slate-200 overflow-hidden">
-              <div
-                className="h-full bg-[#7B2335] transition-all"
-                style={{ width: `${Math.min(Math.max(patient.painLevel || 0, 0), 10) * 10}%` }}
-              />
+              <div className="h-full bg-[#7B2335] transition-all" style={{ width: `${Math.min(Math.max(patient.painLevel || 0, 0), 10) * 10}%` }} />
             </div>
           </div>
         </div>
@@ -171,17 +141,11 @@ export default function PatientDetail() {
               <Heart size={14} /> Condições de Saúde
             </h3>
             <div className="flex flex-wrap gap-2">
-              {patient.comorbidities.map((cond: string) => {
-                const colorClass = getComorbidityColor(cond);
-                return (
-                  <span
-                    key={cond}
-                    className={`px-3 py-1.5 rounded-full text-xs font-bold border ${colorClass} shadow-sm`}
-                  >
-                    {cond}
-                  </span>
-                );
-              })}
+              {patient.comorbidities.map((cond: string) => (
+                <span key={cond} className={`px-3 py-1.5 rounded-full text-xs font-bold border ${getComorbidityColor(cond)} shadow-sm`}>
+                  {cond}
+                </span>
+              ))}
             </div>
           </div>
         )}
@@ -194,10 +158,7 @@ export default function PatientDetail() {
             </h3>
             <div className="flex flex-wrap gap-2">
               {patient.historicoFamiliar.map((hist: string) => (
-                <span
-                  key={hist}
-                  className="px-3 py-1.5 rounded-full text-xs font-bold border bg-gray-100 text-gray-700 border-gray-200"
-                >
+                <span key={hist} className="px-3 py-1.5 rounded-full text-xs font-bold border bg-gray-100 text-gray-700 border-gray-200">
                   {hist}
                 </span>
               ))}
@@ -205,45 +166,34 @@ export default function PatientDetail() {
           </div>
         )}
 
-        {/* PRESCRIÇÕES - NOVO BLOCO */}
+        {/* PRESCRIÇÕES */}
         {patient.prescricao && (
           <div className="bg-white rounded-[28px] border border-slate-200 p-5 shadow-sm">
             <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2 mb-3">
               <Pill size={14} /> Prescrições
             </h3>
             <div className="space-y-3">
-              {patient.prescricao
-                .split("\n\n")
-                .map((presc: string, idx: number) => (
-                  <div
-                    key={idx}
-                    className="p-4 bg-blue-50 rounded-xl border border-blue-100"
-                  >
-                    <p className="text-sm font-bold text-slate-800 whitespace-pre-line">
-                      {presc}
-                    </p>
-                    <div className="flex justify-between mt-2 text-[10px] text-slate-400">
-                      <span>Dr(a). {patient.doctor || "Profissional"}</span>
-                      <span>
-                        {new Date(patient.registeredAt).toLocaleDateString()}
-                      </span>
-                    </div>
+              {patient.prescricao.split("\n\n").map((presc: string, idx: number) => (
+                <div key={idx} className="p-4 bg-blue-50 rounded-xl border border-blue-100">
+                  <p className="text-sm font-bold text-slate-800 whitespace-pre-line">{presc}</p>
+                  <div className="flex justify-between mt-2 text-[10px] text-slate-400">
+                    <span>Dr(a). {patient.doctor || "Profissional"}</span>
+                    <span>{new Date(patient.registeredAt).toLocaleDateString()}</span>
                   </div>
-                ))}
+                </div>
+              ))}
             </div>
           </div>
         )}
 
-        {/* ENCAMINHAMENTO - NOVO BLOCO */}
+        {/* ENCAMINHAMENTO */}
         {patient.encaminhamento && (
           <div className="bg-white rounded-[28px] border border-slate-200 p-5 shadow-sm">
             <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2 mb-3">
               <AlertCircle size={14} /> Encaminhamento
             </h3>
             <div className="p-4 bg-amber-50 rounded-xl border border-amber-100">
-              <p className="text-sm font-bold text-amber-800">
-                {patient.encaminhamento}
-              </p>
+              <p className="text-sm font-bold text-amber-800">{patient.encaminhamento}</p>
             </div>
           </div>
         )}
@@ -254,35 +204,24 @@ export default function PatientDetail() {
             <FlaskConical size={14} /> Laudos e Laboratório
           </h3>
           <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
-            <p className="text-[9px] font-black text-[#EF4444] uppercase mb-2">
-              Resultados Laboratoriais
-            </p>
+            <p className="text-[9px] font-black text-[#EF4444] uppercase mb-2">Resultados Laboratoriais</p>
             <p className="text-xs font-bold text-slate-600 leading-relaxed italic whitespace-pre-line">
               {patient.bloodValues || "Nenhum registro de sangue encontrado."}
             </p>
           </div>
           <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex justify-between items-center">
-            <p className="text-[9px] font-black text-slate-400 uppercase">
-              Imagens de Exames
-            </p>
+            <p className="text-[9px] font-black text-slate-400 uppercase">Imagens de Exames</p>
             <div className="flex gap-1">
               {patient.imageTypes?.map((img: string) => (
-                <span
-                  key={img}
-                  className="text-[8px] bg-white px-2 py-1 rounded-md border font-black"
-                >
-                  {img}
-                </span>
+                <span key={img} className="text-[8px] bg-white px-2 py-1 rounded-md border font-black">{img}</span>
               )) || "---"}
             </div>
           </div>
         </div>
 
-        {/* Evolução Clínica (Resumo) */}
+        {/* Evolução Clínica */}
         <div className="bg-white rounded-[28px] border border-slate-200 p-5 shadow-sm">
-          <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3">
-            Evolução Clínica
-          </h3>
+          <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3">Evolução Clínica</h3>
           <div className="p-4 bg-slate-900 rounded-2xl">
             <p className="text-xs font-bold text-white italic opacity-90">
               "{patient.notes || patient.evolution || "Sem notas registradas."}"
@@ -290,15 +229,13 @@ export default function PatientDetail() {
           </div>
         </div>
 
-        {/* Medicamentos em Uso (além da prescrição) */}
+        {/* Medicamentos Contínuos */}
         {patient.medications && (
           <div className="bg-white rounded-[28px] border border-slate-200 p-5 shadow-sm">
             <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2 mb-3">
               <Pill size={14} /> Medicamentos Contínuos
             </h3>
-            <p className="text-xs font-bold text-slate-700">
-              {patient.medications}
-            </p>
+            <p className="text-xs font-bold text-slate-700">{patient.medications}</p>
           </div>
         )}
 
@@ -308,9 +245,7 @@ export default function PatientDetail() {
             <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2 mb-3">
               <AlertTriangle size={14} /> Alergias
             </h3>
-            <p className="text-xs font-bold text-red-600">
-              {patient.allergies}
-            </p>
+            <p className="text-xs font-bold text-red-600">{patient.allergies}</p>
           </div>
         )}
 
@@ -319,24 +254,13 @@ export default function PatientDetail() {
 
         {/* Ações e Telefone */}
         <div className="grid grid-cols-2 gap-3">
-          <a
-            href={`tel:${patient.phone || ""}`}
-            className="flex items-center justify-center gap-2 py-4 rounded-2xl border-2 font-black text-[11px] uppercase text-slate-700 bg-white"
-          >
+          <a href={`tel:${patient.phone || ""}`} className="flex items-center justify-center gap-2 py-4 rounded-2xl border-2 font-black text-[11px] uppercase text-slate-700 bg-white">
             <Phone size={16} className="text-[#10B981]" /> Ligar
           </a>
-          <a
-            href={`https://wa.me/55${patient.phone?.replace(/\D/g, "")}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 py-4 rounded-2xl border-2 font-black text-[11px] uppercase text-slate-700 bg-white"
-          >
+          <a href={`https://wa.me/55${patient.phone?.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 py-4 rounded-2xl border-2 font-black text-[11px] uppercase text-slate-700 bg-white">
             <MessageSquare size={16} className="text-[#F59E0B]" /> Mensagem
           </a>
-          <button
-            className="col-span-2 py-5 rounded-[22px] text-white font-black text-xs uppercase"
-            style={{ background: "#7B2335" }}
-          >
+          <button className="col-span-2 py-5 rounded-[22px] text-white font-black text-xs uppercase" style={{ background: "#7B2335" }}>
             <Calendar size={16} className="inline mr-2" /> Agendar Retorno
           </button>
         </div>
