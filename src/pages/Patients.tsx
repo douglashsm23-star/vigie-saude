@@ -240,8 +240,16 @@ export default function Patients() {
         ) : (
           <div className="space-y-3">
             {filteredPatients.map((patient) => {
-              const risk = getRisk(patient);
-              const comorbidities = patient.comorbidities || [];
+             const risk = getRisk(patient);
+              
+              // PROTEÇÃO: Garante que comorbidities seja sempre um Array, mesmo vindo do SheetDB
+              let comorbidities: string[] = [];
+              if (Array.isArray(patient.comorbidities)) {
+                comorbidities = patient.comorbidities;
+              } else if (typeof patient.comorbidities === 'string') {
+                comorbidities = patient.comorbidities.split(',').map((c: string) => c.trim()).filter(Boolean);
+              }
+
               const displayComorbidities = comorbidities.slice(0, 2);
               const hasMore = comorbidities.length > 2;
               const ultimaPrescricao = getUltimaPrescricao(patient);
