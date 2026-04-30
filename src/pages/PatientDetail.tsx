@@ -133,7 +133,15 @@ export default function PatientDetail() {
             </div>
           </div>
         </div>
-
+{/* Só renderiza se o paciente tiver CPF, caso contrário mostra um aviso ou nada */}
+        {patient?.cpf ? (
+          <HistoricoRespostas pacienteCpf={patient.cpf} />
+        ) : (
+          <div className="p-4 bg-yellow-50 text-yellow-700 rounded-[28px] text-xs font-bold border border-yellow-200 text-center">
+            Nenhum CPF vinculado para carregar o histórico.
+          </div>
+        )}
+        {/* -------------------------------- */}
         {/* COMORBIDADES */}
         {patient.comorbidities && patient.comorbidities.length > 0 && (
           <div className="bg-white rounded-[28px] border border-slate-200 p-5 shadow-sm">
@@ -249,9 +257,7 @@ export default function PatientDetail() {
           </div>
         )}
 
-        {/* Histórico de Respostas dos Questionários */}
-        <HistoricoRespostas pacienteCpf={patient.cpf} />
-
+ 
         {/* Ações e Telefone */}
         <div className="grid grid-cols-2 gap-3">
           <a href={`tel:${patient.phone || ""}`} className="flex items-center justify-center gap-2 py-4 rounded-2xl border-2 font-black text-[11px] uppercase text-slate-700 bg-white">
